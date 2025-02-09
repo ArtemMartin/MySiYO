@@ -6,23 +6,33 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class ChatServer {
+
     private static final int PORT = 5252;
     private static final List<PrintWriter> clientWriters = new ArrayList<>();
+    private static ServerFrame serverFrame;
 
     private static void myLog(IOException e) {
+        serverFrame.getPoleStatus().setText("Шляпа: " + e.getMessage());
         Logger.getLogger(ChatServer.class.getName()).info("Шляпа: " + e.getMessage());
     }
 
+    public ChatServer(ServerFrame serverFrame) {
+        this.serverFrame = serverFrame;
+    }
+
     public void runServer() {
-        System.out.println("Chat server started...");
+        serverFrame.getPoleStatus().setText("Chat server started...");
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            while (true) new ClientHandler(serverSocket.accept()).start();
+            while (true) {
+                new ClientHandler(serverSocket.accept()).start();
+            }
         } catch (IOException e) {
             myLog(e);
         }
     }
 
     class ClientHandler extends Thread {
+
         private final Socket socket;
         private PrintWriter out;
 
