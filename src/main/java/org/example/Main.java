@@ -8,10 +8,16 @@ public class Main {
     public static void main(String[] args) {
         ServerFrame serverFrame = new ServerFrame();
         serverFrame.setVisible(true);
-        
+
         ChatServer chatServer = new ChatServer(serverFrame);
-        chatServer.runServer();
-        
-        
+        Thread thread2 = new Thread(() -> {
+            chatServer.runServer();
+        });
+        thread2.start();
+
+        Thread thread = new Thread(() -> {
+            chatServer.outListClient();
+        });
+        thread.start();
     }
 }
