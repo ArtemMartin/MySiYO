@@ -3,19 +3,22 @@ package org.example.server;
 import java.io.*;
 import static java.lang.Thread.sleep;
 import java.net.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ChatServer {
 
+    static final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private static final int PORT = 5252;
     private static final List<PrintWriter> clientWriters = new ArrayList<>();
     private static Map<String, Socket> client = new HashMap<>();
     private static ServerFrame serverFrame;
 
     private static void myLog(IOException e) {
-        serverFrame.getPoleStatus().append("\nШляпа: " + e.getMessage());
+        serverFrame.getPoleStatus().append("\nShlapa: " + e.getMessage());
         serverFrame.getPoleStatus().setCaretPosition(
                 serverFrame.getPoleStatus().getDocument().getLength());
         Logger.getLogger(ChatServer.class.getName()).info("Шляпа: " + e.getMessage());
@@ -23,6 +26,11 @@ public class ChatServer {
 
     public ChatServer(ServerFrame serverFrame) {
         this.serverFrame = serverFrame;
+    }
+
+    //получить время
+    public String getTime() {
+        return dateFormat.format(new Date()).toString();
     }
 
     public void runServer() {
@@ -89,6 +97,8 @@ public class ChatServer {
                 }
                 synchronized (clientWriters) {
                     clientWriters.remove(out);
+                    serverFrame.getPoleStatus().append("\n" + getTime()
+                            + " " + name + ": Disconect...");
                     client.remove(name);
                 }
             }

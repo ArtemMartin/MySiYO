@@ -5,7 +5,6 @@
 package org.example.server;
 
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 /**
  *
