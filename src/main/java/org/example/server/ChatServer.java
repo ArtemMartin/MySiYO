@@ -73,8 +73,8 @@ public class ChatServer {
         public void run() {
             String name = "";
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                out = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+                out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
 
                 name = in.readLine();
 
@@ -83,8 +83,7 @@ public class ChatServer {
                     client.put(name, socket);
                 }
                 String message;
-                while ((message = in.readLine()) != null) {
-                    System.out.println("Received: " + message);
+                while ((message = in.readLine()) != null) {                  
                     broadcast(message);
                 }
             } catch (IOException e) {
