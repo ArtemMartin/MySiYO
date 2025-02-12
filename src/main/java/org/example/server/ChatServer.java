@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 public class ChatServer {
 
     static final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-    private static final int PORT = 5252;
+    private static final int PORT = 59867;
     private static final List<PrintWriter> clientWriters = new ArrayList<>();
     private final Crypto crypto = new Crypto();
     private static Map<String, Socket> client = new HashMap<>();
@@ -102,6 +102,8 @@ public class ChatServer {
                     clientWriters.remove(out);
                     serverFrame.getPoleStatus().append("\n" + getTime()
                             + " " + name + ": Disconect...");
+                    serverFrame.getPoleStatus().setCaretPosition(
+                            serverFrame.getPoleStatus().getDocument().getLength());
                     client.remove(name);
                 }
             }
