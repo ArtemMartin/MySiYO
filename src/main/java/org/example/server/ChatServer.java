@@ -14,8 +14,10 @@ public class ChatServer {
     static final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private static final int PORT = 5252;
     private static final List<PrintWriter> clientWriters = new ArrayList<>();
+    private final Crypto crypto = new Crypto();
     private static Map<String, Socket> client = new HashMap<>();
     private static ServerFrame serverFrame;
+    private String messageOnServer;
 
     private static void myLog(IOException e) {
         serverFrame.getPoleStatus().append("\nShlapa: " + e.getMessage());
@@ -44,6 +46,7 @@ public class ChatServer {
         }
     }
 
+    //вывод списка подключенных клиентов
     public void outListClient() {
         while (true) {
             try {
@@ -77,13 +80,14 @@ public class ChatServer {
                 out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
 
                 name = in.readLine();
+                name = crypto.getDeCryptoMessage(name);
 
                 synchronized (clientWriters) {
                     clientWriters.add(out);
                     client.put(name, socket);
                 }
                 String message;
-                while ((message = in.readLine()) != null) {                  
+                while ((message = in.readLine()) != null) {
                     broadcast(message);
                 }
             } catch (IOException e) {
@@ -105,7 +109,9 @@ public class ChatServer {
 
         private void broadcast(String message) {
             synchronized (clientWriters) {
-                serverFrame.getPoleStatus().append("\n" + message);
+                messageOnServer = crypto.getDeCryptoMessage(message);
+                //раскодировать сообщение перед выводом 
+                serverFrame.getPoleStatus().append("\n" + messageOnServer);
                 serverFrame.getPoleStatus().setCaretPosition(
                         serverFrame.getPoleStatus().getDocument().getLength());
                 for (PrintWriter writer : clientWriters) {
