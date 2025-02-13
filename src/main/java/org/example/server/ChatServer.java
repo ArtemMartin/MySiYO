@@ -30,6 +30,10 @@ public class ChatServer {
         this.serverFrame = serverFrame;
     }
 
+    public static int getPORT() {
+        return PORT;
+    }
+
     //получить время
     public String getTime() {
         return dateFormat.format(new Date()).toString();

@@ -12,6 +12,7 @@ public class Main {
 
         ChatServer chatServer = new ChatServer(serverFrame);
         serverFrame.getPoleAdrServer().setText(new ServerUtils().getServerIPv4Address());
+        serverFrame.getPolePort().setText(String.valueOf(chatServer.getPORT()));
         Thread thread2 = new Thread(() -> {
             chatServer.runServer();
         });
