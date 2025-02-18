@@ -19,10 +19,11 @@ public class ChatServer {
     private static final List<PrintWriter> clientWriters = new ArrayList<>();
     private static final Map<String, Socket> client = new HashMap<>();
     private static ServerFrame serverFrame;
-    public final Crypto crypto = new Crypto();
+    private WriteDataToFile writeDataToFile;
 
     public ChatServer(ServerFrame serverFrame) {
         ChatServer.serverFrame = serverFrame;
+        writeDataToFile = new WriteDataToFile();
     }
 
     private static void myLog(IOException e) {
@@ -124,6 +125,7 @@ public class ChatServer {
                         serverFrame.getPoleStatus().getDocument().getLength());
                 //проверка ненужных сообщений
                 if (messageOnServer.contains(check)) {
+                    writeDataToFile.appendDataToFile(message);
                     for (PrintWriter writer : clientWriters) {
                         writer.println(message);
                     }
