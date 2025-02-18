@@ -1,8 +1,11 @@
 package org.example.server;
 
 import java.io.*;
+
 import static java.lang.Thread.sleep;
+
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -14,10 +17,13 @@ public class ChatServer {
     static final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private static final int PORT = 59867;
     private static final List<PrintWriter> clientWriters = new ArrayList<>();
-    private final Crypto crypto = new Crypto();
-    private static Map<String, Socket> client = new HashMap<>();
+    private static final Map<String, Socket> client = new HashMap<>();
     private static ServerFrame serverFrame;
-    private String messageOnServer;
+    public final Crypto crypto = new Crypto();
+
+    public ChatServer(ServerFrame serverFrame) {
+        ChatServer.serverFrame = serverFrame;
+    }
 
     private static void myLog(IOException e) {
         serverFrame.getPoleStatus().append("\nShlapa: " + e.getMessage());
@@ -26,25 +32,20 @@ public class ChatServer {
         Logger.getLogger(ChatServer.class.getName()).info("Шляпа: " + e.getMessage());
     }
 
-    public ChatServer(ServerFrame serverFrame) {
-        this.serverFrame = serverFrame;
-    }
-
     public static int getPORT() {
         return PORT;
     }
 
     //получить время
     public String getTime() {
-        return dateFormat.format(new Date()).toString();
+        return dateFormat.format(new Date());
     }
 
     public void runServer() {
         serverFrame.getPoleStatus().setText("Server started...");
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            while (true) {
+            while (true)
                 new ClientHandler(serverSocket.accept()).start();
-            }
         } catch (IOException e) {
             myLog(e);
         }
@@ -80,11 +81,11 @@ public class ChatServer {
         public void run() {
             String name = "";
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-                out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
 
                 name = in.readLine();
-                name = crypto.getDeCryptoMessage(name);
+                name = Crypto.getDeCryptoMessage(name);
 
                 synchronized (clientWriters) {
                     clientWriters.add(out);
@@ -114,14 +115,18 @@ public class ChatServer {
         }
 
         private void broadcast(String message) {
+            String check = "->";
             synchronized (clientWriters) {
-                messageOnServer = crypto.getDeCryptoMessage(message);
+                String messageOnServer = Crypto.getDeCryptoMessage(message);
                 //раскодировать сообщение перед выводом 
                 serverFrame.getPoleStatus().append("\n" + messageOnServer);
                 serverFrame.getPoleStatus().setCaretPosition(
                         serverFrame.getPoleStatus().getDocument().getLength());
-                for (PrintWriter writer : clientWriters) {
-                    writer.println(message);
+                //проверка ненужных сообщений
+                if (message.contains(check)) {
+                    for (PrintWriter writer : clientWriters) {
+                        writer.println(message);
+                    }
                 }
             }
         }
