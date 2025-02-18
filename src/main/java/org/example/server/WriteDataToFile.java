@@ -4,8 +4,8 @@ import java.io.*;
 import java.util.logging.Logger;
 
 public class WriteDataToFile {
-    File file = new File("DataChat.txt");
-    BufferedWriter writer;
+    private File file = new File("DataChat.txt");
+    private BufferedWriter writer;
 
     public WriteDataToFile() {
         try {
@@ -14,6 +14,10 @@ public class WriteDataToFile {
         } catch (IOException e) {
             myLog(e, 15);
         }
+    }
+
+    public String getFile() {
+        return file.getPath();
     }
 
     private static void myLog(IOException e, int line) {

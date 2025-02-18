@@ -6,6 +6,9 @@ import static java.lang.Thread.sleep;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -19,7 +22,7 @@ public class ChatServer {
     private static final List<PrintWriter> clientWriters = new ArrayList<>();
     private static final Map<String, Socket> client = new HashMap<>();
     private static ServerFrame serverFrame;
-    private WriteDataToFile writeDataToFile;
+    private static WriteDataToFile writeDataToFile;
 
     public ChatServer(ServerFrame serverFrame) {
         ChatServer.serverFrame = serverFrame;
@@ -87,6 +90,8 @@ public class ChatServer {
 
                 name = in.readLine();
                 name = Crypto.getDeCryptoMessage(name);
+                //отправить содержимое файла
+                out.println(Arrays.toString(Files.readAllBytes(Paths.get(writeDataToFile.getFile()))));
 
                 synchronized (clientWriters) {
                     clientWriters.add(out);
