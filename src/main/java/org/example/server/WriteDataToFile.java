@@ -20,20 +20,14 @@ public class WriteDataToFile {
         Logger.getLogger(WriteDataToFile.class.getName()).info("Line " + line + ": " + e.getMessage());
     }
 
+
     public void appendDataToFile(String str) {
         try {
             writer.append(str).append("\n");
             writer.flush();
         } catch (IOException e) {
             myLog(e, 33);
-        } finally {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                myLog(e, 38);
-            }
         }
     }
-
 
 }
