@@ -117,13 +117,13 @@ public class ChatServer {
         private void broadcast(String message) {
             String check = "->";
             synchronized (clientWriters) {
+                //раскодировать сообщение перед выводом
                 String messageOnServer = Crypto.getDeCryptoMessage(message);
-                //раскодировать сообщение перед выводом 
                 serverFrame.getPoleStatus().append("\n" + messageOnServer);
                 serverFrame.getPoleStatus().setCaretPosition(
                         serverFrame.getPoleStatus().getDocument().getLength());
                 //проверка ненужных сообщений
-                if (message.contains(check)) {
+                if (messageOnServer.contains(check)) {
                     for (PrintWriter writer : clientWriters) {
                         writer.println(message);
                     }
