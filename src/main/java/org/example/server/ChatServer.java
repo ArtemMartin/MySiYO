@@ -91,7 +91,7 @@ public class ChatServer {
                 name = in.readLine();
                 name = Crypto.getDeCryptoMessage(name);
                 //отправить содержимое файла
-                out.println(Arrays.toString(Files.readAllBytes(Paths.get(writeDataToFile.getFile()))));
+                out.println(Files.readString(Paths.get(writeDataToFile.getFile())));
 
                 synchronized (clientWriters) {
                     clientWriters.add(out);
